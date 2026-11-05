@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="sikineo-session" content="__SIKINEO_SESSION__">
   <title>sikineo — neoで描く</title>
   <link rel="stylesheet" href="/neo/neo.css">
   <link rel="stylesheet" href="/drawing.css">
@@ -12,9 +13,15 @@
 <body>
   <main>
     <h1>neoで描く</h1>
-    <p>300 × 300 px・描画専用。5chへの投稿・画像の書き出しには対応していません。</p>
-    <div class="neo-applet-paintbbs" data-width="400" data-height="460"></div>
-    <p class="note">一時保存はneoの復元機能に依存します。確実な保存は保証しません。同時に描く画面は1つにしてください。</p>
+    <p>添付先：<strong id="attachment-target"></strong><br>描画サイズ：<span id="drawing-dimensions"></span></p>
+    <div class="editor-scroll">
+      <div class="neo-applet-paintbbs" data-width="600" data-height="420"></div>
+    </div>
+    <p>描いた画像を、開いたときのSikiの投稿欄へ添付します。本文はそのまま残り、自動送信はしません。</p>
+    <button id="attach-image" type="button" disabled>Sikiの投稿欄へ画像を渡す</button>
+    <p id="attachment-status" role="status" aria-live="polite" aria-atomic="true"></p>
+    <p class="note">旧版の300×300pxの一時保存は別の保存領域に残し、この画面へは移しません。</p>
+    <p class="note">画像を渡した後も描画は残ります。送信はSikiで行ってください。描き終わったらSikiのブラウザ表示を閉じられます。一時保存はneoの復元機能に依存し、確実な保存は保証しません。同時に描く画面は1つにしてください。</p>
   </main>
 </body>
 </html>
