@@ -1,20 +1,17 @@
 import { randomBytes } from 'node:crypto';
-import { access, readFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { join } from 'node:path';
 import type { AttachmentBridge, AttachmentTarget } from './attachment';
 
-const contentSecurityPolicy = "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
+const contentSecurityPolicy = "default-src 'none'; script-src 'self' https://oekakibbs.moe/apps/neo/neo.js; style-src 'self' 'unsafe-inline' https://oekakibbs.moe/apps/neo/neo.css; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 
 export function createDrawingServer(pluginDirectory: string, bridge: AttachmentBridge) {
-  const neoScript = join(pluginDirectory, 'neo/neo.js');
-  const neoStyle = join(pluginDirectory, 'neo/neo.css');
   const resources: Record<string, { file: string; mime: string }> = {
     '/drawing.js': { file: join(pluginDirectory, 'dist/drawing.js'), mime: 'text/javascript; charset=utf-8' },
     '/drawing.css': { file: join(pluginDirectory, 'public/drawing.css'), mime: 'text/css; charset=utf-8' },
-    '/neo/neo.js': { file: neoScript, mime: 'text/javascript; charset=utf-8' },
-    '/neo/neo.css': { file: neoStyle, mime: 'text/css; charset=utf-8' },
+    '/neo-resources.js': { file: join(pluginDirectory, 'dist/neo-resources.js'), mime: 'text/javascript; charset=utf-8' },
   };
   const sessions = new Map<string, AttachmentTarget>();
   const escapedCharacters: Record<string, string> = {
@@ -117,13 +114,6 @@ export function createDrawingServer(pluginDirectory: string, bridge: AttachmentB
         return;
       }
       if (url.pathname === '/') {
-        try {
-          await Promise.all([access(neoScript), access(neoStyle)]);
-        } catch (error) {
-          if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
-          await sendFile(join(pluginDirectory, 'public/setup.html'), 'text/html; charset=utf-8', 503);
-          return;
-        }
         let target: AttachmentTarget;
         try {
           target = await bridge.resolveTarget();

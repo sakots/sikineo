@@ -37,12 +37,14 @@ try {
     height: session.height,
   };
   // Neo reads these parameters in its earlier DOMContentLoaded listener.
-  Neo.params = {
-    paintbbs: {
-      image_width: drawingSession.width,
-      image_height: drawingSession.height,
-    },
-  };
+  if (typeof Neo !== 'undefined') {
+    Neo.params = {
+      paintbbs: {
+        image_width: drawingSession.width,
+        image_height: drawingSession.height,
+      },
+    };
+  }
 } catch {
   drawingSessionError = '画像を渡す先の情報を読み込めません。Sikiの対象スレッドから開き直してください。';
 }
@@ -66,8 +68,25 @@ document.addEventListener('DOMContentLoaded', () => {
   target.textContent = session.title;
   dimensions.textContent = `${session.width} × ${session.height} px`;
 
-  if (navigator.userAgent.includes('Electron')) {
-    Neo.start(false);
+  let loadingError = '';
+  if (typeof Neo === 'undefined') {
+    loadingError = 'neo.jsを読み込めません。https://oekakibbs.moe/apps/neo/neo.js への接続を確認してページを再読み込みしてください。';
+  } else if (!neoResources.styleLoaded) {
+    loadingError = 'neo.cssを読み込めません。https://oekakibbs.moe/apps/neo/neo.css への接続を確認してページを再読み込みしてください。';
+  } else {
+    try {
+      if (navigator.userAgent.includes('Electron')) Neo.start(false);
+      if (!Neo.painter) throw new Error('描画キャンバスが初期化されていません。');
+    } catch (error) {
+      loadingError = `neoを初期化できません。${error instanceof Error ? error.message : 'ページを再読み込みしてください。'}`;
+    }
+  }
+  if (loadingError) {
+    status.textContent = loadingError;
+    status.dataset.state = 'error';
+    const editor = document.querySelector<HTMLElement>('.editor-scroll');
+    if (editor) editor.hidden = true;
+    return;
   }
 
   button.disabled = false;

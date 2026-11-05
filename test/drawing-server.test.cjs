@@ -1,20 +1,21 @@
 const assert = require('node:assert/strict');
-const { cp, mkdir, mkdtemp, rm, writeFile } = require('node:fs/promises');
+const { cp, mkdtemp, rm, writeFile } = require('node:fs/promises');
 const { request } = require('node:http');
 const { tmpdir } = require('node:os');
 const { join } = require('node:path');
 const { test } = require('node:test');
 const { createDrawingServer } = require('../dist/server.js');
 
-async function startServer(t) {
+async function startServer(t, resolveTarget = async () => ({
+  tabid: '2', location: 'https://egg.5ch.io/test/read.cgi/software/1234567890/',
+  title: 'HTTP boundary fixture', width: 500, height: 250, webContentsId: 1,
+})) {
   const directory = await mkdtemp(join(tmpdir(), 'sikineo-http-'));
   t.after(() => rm(directory, { recursive: true, force: true }));
   await cp(join(__dirname, '../public'), join(directory, 'public'), { recursive: true });
   await writeFile(join(directory, 'package.json'), 'private-profile-marker');
   const server = createDrawingServer(directory, {
-    resolveTarget: async () => ({
-      tabid: '2', location: 'https://egg.5ch.io/test/read.cgi/software/1234567890/', title: 'HTTP boundary fixture', width: 500, height: 250, webContentsId: 1,
-    }),
+    resolveTarget,
     attach: async () => assert.fail('拒否されたリクエストがSikiを変更してはいけない'),
   });
   await new Promise((resolve, reject) => {
@@ -41,15 +42,9 @@ async function startServer(t) {
   return { directory, get, origin: `http://127.0.0.1:${port}` };
 }
 
-test('neo本体の両ファイルを配置すると再起動なしで案内から描画画面へ切り替わる', async (t) => {
-  const { directory, get } = await startServer(t);
-  const targetPage = '/';
-  assert.equal((await get(targetPage)).status, 503);
-  await mkdir(join(directory, 'neo'));
-  await writeFile(join(directory, 'neo/neo.js'), 'globalThis.fixture = true;');
-  assert.equal((await get(targetPage)).status, 503);
-  await writeFile(join(directory, 'neo/neo.css'), 'body { margin: 0; }');
-  assert.equal((await get(targetPage)).status, 200);
+test('ローカルneoの配置に関係なくSikiの添付先がなければ開始を拒否する', async (t) => {
+  const { get } = await startServer(t, async () => { throw new Error('対象スレッドがありません'); });
+  assert.equal((await get('/')).status, 409);
 });
 
 test('別ホスト・書き込み・許可リスト外のファイルは配信しない', async (t) => {
