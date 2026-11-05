@@ -25,13 +25,57 @@ p, li {
   line-height: 1.7;
 }
 
-samp {
-  overflow-wrap: anywhere;
-}
-
 .note {
   color: #555;
   font-size: 13px;
+}
+
+.editor-scroll {
+  overflow-x: auto;
+}
+
+#attachment-target {
+  overflow-wrap: anywhere;
+}
+
+#attach-image {
+  max-width: 100%;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #18519a;
+  border-radius: 4px;
+  color: #fff;
+  background: #18519a;
+  font: inherit;
+  cursor: pointer;
+}
+
+#attach-image:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+#attach-image:focus-visible {
+  outline: 3px solid #202020;
+  outline-offset: 3px;
+}
+
+#attachment-status {
+  overflow-wrap: anywhere;
+}
+
+#attachment-status[data-state="error"] {
+  color: #a31b1b;
+}
+
+#attachment-status[data-state="success"] {
+  color: #14632f;
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: 12px;
+  }
 }
 
 .NEO #neo-submit {

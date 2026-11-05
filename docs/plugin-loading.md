@@ -17,7 +17,7 @@ Sikiの汎用プラグインとしてsikineoを認識・読み込みできるよ
 - TypeScriptをCommonJSにコンパイルする。実行時の外部依存は不要。
 - トップレベルに`type = 'startup'`、`meta`、`mainScript(settings, tools)`を公開する。
 - `meta`には名前、説明、バージョン、API参照基準の`needVersion`を含める。名前・説明・バージョンは`package.json`を参照し、二重管理しない。
-- `mainScript`はループバックHTTPサーバーを起動し、待受完了後にSikiから渡されたイベントエミッターで`plugin:sikineo:ready`を引数なしで1回発火する。描画画面はユーザーコマンドから開く。設定やプロファイルには書き込まない。
+- `mainScript`はループバックHTTPサーバーを起動し、待受完了後にSikiから渡されたイベントエミッターで`plugin:sikineo:ready`を引数なしで1回発火する。描画画面はユーザーコマンドから開く。プラグイン設定は書き換えず、画像引き渡し時はSiki自身の描画保存処理を呼ぶ。
 
 ## 開発と検証
 

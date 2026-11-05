@@ -1,7 +1,7 @@
 {
   "name": "sikineo",
-  "version": "0.2.0",
-  "description": "Sikiからneo描画画面を手動で開くプラグイン",
+  "version": "0.3.0",
+  "description": "Sikiからneoで描き、対象スレッドの投稿欄へ画像を渡すプラグイン",
   "type": "commonjs",
   "main": "dist/index.js",
   "files": [
@@ -9,6 +9,7 @@
     "public",
     "docs/plugin-loading.md",
     "docs/neo-drawing.md",
+    "docs/image-attachment.md",
     "changelog.md"
   ],
   "scripts": {
