@@ -1,12 +1,14 @@
 {
   "name": "sikineo",
-  "version": "0.1.0",
-  "description": "Sikiでneoを利用するためのプラグイン（現在は起動処理のみ）",
+  "version": "0.2.0",
+  "description": "Sikiからneo描画画面を手動で開くプラグイン",
   "type": "commonjs",
   "main": "dist/index.js",
   "files": [
     "dist",
+    "public",
     "docs/plugin-loading.md",
+    "docs/neo-drawing.md",
     "changelog.md"
   ],
   "scripts": {
